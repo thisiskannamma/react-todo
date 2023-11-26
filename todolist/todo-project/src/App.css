@@ -1,0 +1,47 @@
+#root {
+  max-width: 3000px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+input{
+  margin-left: 20px;
+  border-radius: 5px;
+  padding: 10px;
+  width:25rem;
+  margin-top: 20px;
+  border:1px solid rgb(156, 241, 156);
+}
+.bg{
+  margin-left: 20px;
+  width:13rem;
+  color: white;
+}
+.btn{
+  margin-top: 50px;
+  margin-left:10px ;
+  margin-right: 10px;
+}
+.find{
+  display: flex;
+  justify-content: space-between;
+  margin-top: 70px;
+}
+.card{
+  margin-top: 30px;
+  display: flex;
+  flex-direction:column;
+  float: left;
+  flex-wrap: wrap;
+  width:30%;
+  height: fit-content;
+  overflow-y: auto;
+  background-color:rgb(192, 245, 236) ;
+  margin-left: 30px;
+}
+
+.card-text{
+  text-align: left;
+  padding: 5px;
+
+}
