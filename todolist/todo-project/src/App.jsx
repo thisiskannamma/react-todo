@@ -25,6 +25,10 @@ function App() {
         }
         return elem;
       }))
+      setTitle("")
+      setDescription("");
+    settoggle(true);
+    setEditid(null);
     }
     else {
       let updatedTodoArr = [...toDolist];
