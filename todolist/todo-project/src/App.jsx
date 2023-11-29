@@ -7,7 +7,7 @@ function App() {
   const [toDolist, setTodolist] = useState([]);
   const [newTitle, setTitle] = useState("");
   const [newDescription, setDescription] = useState("");
-  const[toggle,settoggle]=useState(true)
+  const [toggle, settoggle] = useState(true)
   const [editId, setEditid] = useState(null);
   const addHandler = () => {
 
@@ -15,23 +15,24 @@ function App() {
       title: newTitle,
       description: newDescription,
     }
-    if(!newTitle){
+    if (!newTitle || !newDescription) {
       alert('please fill in fields')
     }
-    else if(newTitle && !toggle){
-      setTodolist(items.map((elem)=>{
-        if(elem.index===editId){
-          return{...elem,title:newTitle}
+    else if (newTitle && newDescription && !toggle) {
+      setTodolist(toDolist.map((elem) => {
+        if (elem.index === editId) {
+          return { ...elem, title: newTitle,description:newDescription }
         }
         return elem;
       }))
-    }else{
+    }
+    else {
       let updatedTodoArr = [...toDolist];
-    updatedTodoArr.push(newTodoItem);
-    setTodolist(updatedTodoArr);
-    localStorage.setItem("TODOLIST", JSON.stringify(updatedTodoArr));
-    setTitle("");
-    setDescription("");
+      updatedTodoArr.push(newTodoItem);
+      setTodolist(updatedTodoArr);
+      localStorage.setItem("TODOLIST", JSON.stringify(updatedTodoArr));
+      setTitle("");
+      setDescription("");
     }
 
     // if (editId) {
@@ -45,7 +46,7 @@ function App() {
     //   setTitle("");
     //   return;
     // }
-    
+
 
 
   };
@@ -60,9 +61,9 @@ function App() {
 
   const editHandler = (index) => {
     debugger
-    let findTitle = toDolist.find((list) => {return list.index === index});
+    let findTitle = toDolist.find((list) => { return list.index === index });
     setTitle(findTitle.title);
-    let findDescription = toDolist.find((list) => list.index === index);
+    let findDescription = toDolist.find((list) =>{return list.index === index});
     setDescription(findDescription.description);
     settoggle(false)
     setEditid(index);
@@ -80,8 +81,8 @@ function App() {
         <h3>My todo</h3>
         <input value={newTitle} onChange={(e) => { setTitle(e.target.value) }} type="text" placeholder='Todo Name' required />
         <input value={newDescription} onChange={(e) => { setDescription(e.target.value) }} type="text" placeholder='Todo Description' required />
-        {toggle?<button onClick={addHandler} className='bg bg-success'>Add to do</button>:<button onClick={addHandler} className='bg bg-success'>Update</button>}
-        
+        {toggle ? <button onClick={addHandler} className='bg bg-success'>Add to do</button> : <button onClick={addHandler} className='bg bg-success'>Update</button>}
+
         <br />
         <div className='find'>
           <h4>My Todos</h4><br />
