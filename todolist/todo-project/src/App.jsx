@@ -7,33 +7,47 @@ function App() {
   const [toDolist, setTodolist] = useState([]);
   const [newTitle, setTitle] = useState("");
   const [newDescription, setDescription] = useState("");
-  const [editId, setEditid] = useState(0);
+  const[toggle,settoggle]=useState(true)
+  const [editId, setEditid] = useState(null);
   const addHandler = () => {
-    
+
     let newTodoItem = {
       title: newTitle,
       description: newDescription,
     }
-    
-    if (editId) {
-      const edittodo = toDolist.find((i) => i.index !== editId);
-      const updatedtodo = toDolist.map((t) => t.index === edittodo.index ? 
-      (t = { index: t.index, newTitle })
-       : { index: t.index, newTitle: t.newTitle }
-       );
-       setTodolist(updatedtodo);
-       setEditid(0);
-       setTitle("");
-       return;
+    if(!newTitle){
+      alert('please fill in fields')
     }
-    let updatedTodoArr = [...toDolist];
+    else if(newTitle && !toggle){
+      setTodolist(items.map((elem)=>{
+        if(elem.index===editId){
+          return{...elem,title:newTitle}
+        }
+        return elem;
+      }))
+    }else{
+      let updatedTodoArr = [...toDolist];
     updatedTodoArr.push(newTodoItem);
     setTodolist(updatedTodoArr);
     localStorage.setItem("TODOLIST", JSON.stringify(updatedTodoArr));
     setTitle("");
     setDescription("");
+    }
 
-   
+    // if (editId) {
+    //   const edittodo = toDolist.find((i) => i.index !== editId);
+    //   const updatedtodo = toDolist.map((t) => t.index !== edittodo.index ?
+    //     (t = { index: t.index, newTitle })
+    //     : { index: t.index, newTitle: t.newTitle }
+    //   );
+    //   setTodolist(updatedtodo);
+    //   setEditid(0);
+    //   setTitle("");
+    //   return;
+    // }
+    
+
+
   };
 
   const deleteHandler = (index) => {
@@ -45,11 +59,12 @@ function App() {
   }
 
   const editHandler = (index) => {
-    
-    let findTitle = toDolist.find((list) => list.index !== index);
+    debugger
+    let findTitle = toDolist.find((list) => {return list.index === index});
     setTitle(findTitle.title);
-    let findDescription = toDolist.find((list) => list.index !== index);
+    let findDescription = toDolist.find((list) => list.index === index);
     setDescription(findDescription.description);
+    settoggle(false)
     setEditid(index);
 
   }
@@ -65,7 +80,8 @@ function App() {
         <h3>My todo</h3>
         <input value={newTitle} onChange={(e) => { setTitle(e.target.value) }} type="text" placeholder='Todo Name' required />
         <input value={newDescription} onChange={(e) => { setDescription(e.target.value) }} type="text" placeholder='Todo Description' required />
-        <button onClick={addHandler} className='bg bg-success'>{editId ? 'Update' : 'Add Todo'}</button>
+        {toggle?<button onClick={addHandler} className='bg bg-success'>Add to do</button>:<button onClick={addHandler} className='bg bg-success'>Update</button>}
+        
         <br />
         <div className='find'>
           <h4>My Todos</h4><br />
@@ -77,9 +93,9 @@ function App() {
         </div>
       </div>
       <div>
-        {toDolist.map((item, index) => {
+        {toDolist.map((item) => {
           return (
-            <div key={index} className="card">
+            <div key={item.index} className="card">
               <div className="card-body">
                 <div className='card-text'>
                   <p>Name  : {item.title}</p>
@@ -90,8 +106,8 @@ function App() {
                     <option>Not Completed</option>
                   </select></p>
                 </div>
-                <button  onClick={() => editHandler(index)} className='btn btn-success'>Edit</button>
-                <button onClick={() => deleteHandler(index)} className='btn btn-danger'>Delete</button>
+                <button onClick={() => editHandler(item.index)} className='btn btn-success'>Edit</button>
+                <button onClick={() => deleteHandler(item.index)} className='btn btn-danger'>Delete</button>
               </div>
             </div>)
         })}
