@@ -4,31 +4,41 @@ import viteLogo from '/vite.svg'
 import './App.css'
 
 function App() {
+  const option = ["All", "Completed", "Not completed"];
+
+
   const [toDolist, setTodolist] = useState([]);
   const [newTitle, setTitle] = useState("");
   const [newDescription, setDescription] = useState("");
+  const [newStatus, setStatus] = useState("")
+  const [completedTodo, setCompletedTodo] = useState([])
+  const [notCompletedTodo, setNotCompletedTodo] = useState([])
+
   const [toggle, settoggle] = useState(true)
   const [editId, setEditid] = useState(null);
+
   const addHandler = () => {
 
     let newTodoItem = {
       title: newTitle,
       description: newDescription,
+      status: option[2]
+
     }
     if (!newTitle || !newDescription) {
       alert('please fill in fields')
     }
     else if (newTitle && newDescription && !toggle) {
-      setTodolist(toDolist.map((elem) => {
-        if (elem.index === editId) {
-          return { ...elem, title: newTitle,description:newDescription }
+      setTodolist(toDolist.map((elem, index) => {
+        if (index === editId) {
+          return { ...elem, title: newTitle, description: newDescription }
         }
         return elem;
       }))
       setTitle("")
       setDescription("");
-    settoggle(true);
-    setEditid(null);
+      settoggle(true);
+      setEditid(null);
     }
     else {
       let updatedTodoArr = [...toDolist];
@@ -38,24 +48,33 @@ function App() {
       setTitle("");
       setDescription("");
     }
+    // if (editId !=null) {
+    //   const edittodo = toDolist.find((i,idx) => idx === editId);
+    //   console.log(edittodo);
 
-    // if (editId) {
-    //   const edittodo = toDolist.find((i) => i.index !== editId);
-    //   const updatedtodo = toDolist.map((t) => t.index !== edittodo.index ?
-    //     (t = { index: t.index, newTitle })
-    //     : { index: t.index, newTitle: t.newTitle }
-    //   );
+    //   const updatedtodo=toDolist.map((item,index)=>index === editId?
+    //   ({ ...item, title: newTitle, description: newDescription })
+    //   :({...item}))
+    //   console.log(updatedtodo);
+
+
+    //   // const updatedtodo = toDolist.map((t) => t.index !== edittodo.index ?
+    //   //   (t = { index: t.index, newTitle })
+    //   //   : { index: t.index, newTitle: t.newTitle }
+    //   // );
     //   setTodolist(updatedtodo);
-    //   setEditid(0);
+    //   setEditid();
     //   setTitle("");
-    //   return;
+    //   // return;
     // }
+
 
 
 
   };
 
   const deleteHandler = (index) => {
+
     let reducedlist = [...toDolist];
     reducedlist.splice(index, 1);
 
@@ -64,21 +83,73 @@ function App() {
   }
 
   const editHandler = (index) => {
-    debugger
-    let findTitle = toDolist.find((list) => { return list.index === index });
+
+    let findTitle = toDolist.find((list, ind) => { return ind === index });
     setTitle(findTitle.title);
-    let findDescription = toDolist.find((list) =>{return list.index === index});
+
+    let findDescription = toDolist.find((list, ind) => { return ind === index });
     setDescription(findDescription.description);
     settoggle(false)
     setEditid(index);
 
+
   }
+
+  const editStatus = (index, e) => {
+
+console.log(e.target.value);
+
+    setTodolist(toDolist.map((elem, ind) => {
+      if (index == ind) {
+        return { ...elem, status: e.target.value }
+      }
+      return elem;
+    }))
+    // setStatus(option[2])
+    console.log(toDolist);
+
+    localStorage.setItem("TODOLIST", JSON.stringify(toDolist));
+
+
+
+  }
+  console.log(toDolist);
+  console.log(completedTodo);
+
+  const filterStatus = (e) => {
+    console.log(e.target.value);
+    setStatus(e.target.value)
+    if (e.target.value === option[1]) {
+      let filterCompleted = toDolist.filter((item) => item.status === option[1])
+      setCompletedTodo(filterCompleted)
+      console.log(filterCompleted);
+
+
+    }
+    else if (e.target.value === option[2]) {
+      let filterNotCompleted = toDolist.filter((item) => item.status === option[2])
+      setNotCompletedTodo(filterNotCompleted)
+      console.log(filterNotCompleted);
+
+    }
+    else {
+      setTodolist(toDolist)
+
+    }
+
+  }
+
   useEffect(() => {
     let savedTodo = JSON.parse(localStorage.getItem('TODOLIST'));
     if (savedTodo) {
       setTodolist(savedTodo);
     }
   }, [])
+
+
+
+
+
   return (
     <>
       <div className='header text-center'>
@@ -90,34 +161,74 @@ function App() {
         <br />
         <div className='find'>
           <h4>My Todos</h4><br />
-          <h4>Status Filter : <select>
-            <option>All</option>
-            <option>Completed</option>
-            <option>Not Completed</option>
+          <h4>Status Filter : <select onChange={(e) => filterStatus(e)} >
+            {option.map((op, index) => (<option key={index} value={op}>{op}</option>))}
+
           </select></h4>
         </div>
       </div>
-      <div>
-        {toDolist.map((item) => {
+      {newStatus === option[1] ? <><div>
+        {completedTodo.map((item, index) => {
           return (
-            <div key={item.index} className="card">
+            <div key={index}  className="card">
               <div className="card-body">
                 <div className='card-text'>
                   <p>Name  : {item.title}</p>
                   <p>Description : {item.description}</p>
-                  <p>status <select>
-                    <option>All</option>
-                    <option>Completed</option>
-                    <option>Not Completed</option>
+                  <p>status <select onChange={(e) => editStatus(index, e)} >
+                    <option value={option[2]} >{option[2]}</option>
+                    <option value={option[1]} >{option[1]}</option>
                   </select></p>
                 </div>
-                <button onClick={() => editHandler(item.index)} className='btn btn-success'>Edit</button>
-                <button onClick={() => deleteHandler(item.index)} className='btn btn-danger'>Delete</button>
+                <button onClick={() => editHandler(index)} className='btn btn-success'>Edit</button>
+                <button onClick={() => deleteHandler(index)} className='btn btn-danger'>Delete</button>
               </div>
             </div>)
         })}
 
-      </div>
+      </div></> : <>
+        {newStatus === option[2] ? <><div>
+          {notCompletedTodo.map((item, index) => {
+            return (
+              <div key={index}  className="card">
+                <div className="card-body">
+                  <div className='card-text'>
+                    <p>Name  : {item.title}</p>
+                    <p>Description : {item.description}</p>
+                    <p>status <select onChange={(e) => editStatus(index, e)} >
+                      <option value={option[2]} >{option[2]}</option>
+                      <option value={option[1]} >{option[1]}</option>
+                    </select></p>
+                  </div>
+                  <button onClick={() => editHandler(index)} className='btn btn-success'>Edit</button>
+                  <button onClick={() => deleteHandler(index)} className='btn btn-danger'>Delete</button>
+                </div>
+              </div>)
+          })}
+
+        </div></> : <><div>
+          {toDolist.map((item, index) => {
+            return (
+              <div key={index} style={{ display: "flex" }} className="card">
+                <div className="card-body">
+                  <div className='card-text'>
+                    <p>Name  : {item.title}</p>
+                    <p>Description : {item.description}</p>
+                    <p>status <select onChange={(e) => editStatus(index, e)} >
+                      <option value={option[2]} >{option[2]}</option>
+                      <option value={option[1]} >{option[1]}</option>
+                    </select></p>
+                  </div>
+                  <button onClick={() => editHandler(index)} className='btn btn-success'>Edit</button>
+                  <button onClick={() => deleteHandler(index)} className='btn btn-danger'>Delete</button>
+                </div>
+              </div>)
+          })}
+
+        </div></>}</>}
+
+
+
 
     </>
   )
